@@ -1,8 +1,9 @@
 (ns pustota.core
-  (use [clojure.tools.cli :only [cli]])
+  (:use [clojure.tools.cli :only [cli]])
+  (:require [pustota.grabber :as g]
+            [clojure.core.async :as async])
   (:gen-class))
 
-(defn plus "Sum of two numbers." [x y] (+ x y))
 
 
 (defn parse-args
@@ -23,4 +24,11 @@
     (when (:help options)
       (println banner)
       (System/exit 0))
-    (println options)))
+    (let [workers (:workers options)
+          grabber (g/grab workers identity)]
+      (async/<!!
+        (async/go
+          (doseq [_ (range workers)]
+            (println (async/<! grabber))))))))
+
+

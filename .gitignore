@@ -8,3 +8,6 @@ target
 .lein-deps-sum
 .lein-plugins
 .lein-repl-history
+.lein-fails
+.nrepl-port
+
