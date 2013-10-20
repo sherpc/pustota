@@ -1,6 +1,10 @@
 (ns pustota.grabber
   (:use [clojure.core.async :only [chan go >!]])
-  (:require [net.cgrand.enlive-html :as html]))
+  (:require [net.cgrand.enlive-html :as html]
+            [clojure.string :as str]))
+
+(defmacro swallow-exceptions [& body]
+    `(try ~@body (catch Exception e#)))
 
 (def pustota-url "http://vpustotu.ru/moderation/")
 
@@ -13,7 +17,9 @@
     fetch-url
     (html/select [:div.fi_text])
     first
-    html/text))
+    html/text
+    str/trim
+    #(if (str/blank? %) nil %)))
 
 (defn grab
   "Создает workers потоков и возвращает канал."
@@ -22,7 +28,10 @@
     (do
       (doseq [i (range workers)]
         (go
-          (Thread/sleep (rand-int 1000))
-          (>! c (parse-url))))
+         (while true
+           (let [data (swallow-exceptions (parse-url))]
+             (if (not (nil? data))
+               (>! c data)))
+           (Thread/sleep 1000))))
       (println "Running threads: " workers)
       c)))

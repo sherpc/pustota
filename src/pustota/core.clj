@@ -28,5 +28,7 @@
           grabber (g/grab workers)]
       (async/<!!
         (async/go
-          (doseq [_ (range workers)]
-            (println (async/<! grabber))))))))
+          (doseq [_ (range 10)]
+            (println (async/<! grabber))))))))
+
+
