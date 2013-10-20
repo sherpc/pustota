@@ -25,10 +25,8 @@
       (println banner)
       (System/exit 0))
     (let [workers (:workers options)
-          grabber (g/grab workers identity)]
+          grabber (g/grab workers)]
       (async/<!!
         (async/go
           (doseq [_ (range workers)]
-            (println (async/<! grabber))))))))
-
-
+            (println (async/<! grabber))))))))
