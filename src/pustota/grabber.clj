@@ -11,6 +11,8 @@
 (defn fetch-url [url]
   (html/html-resource (java.net.URL. url)))
 
+(defn blank-to-nil [s] (if (str/blank? s) nil s))
+  
 (defn parse-url
   []
   (-> pustota-url
@@ -19,7 +21,7 @@
     first
     html/text
     str/trim
-    #(if (str/blank? %) nil %)))
+    blank-to-nil))
 
 (defn grab
   "Создает workers потоков и возвращает канал."
